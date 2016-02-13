@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:weightSum="1"
+    android:background="@color/transparent_color">
+
+    <ImageButton
+        android:layout_width="0dp"
+        android:layout_weight="0.2"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:id="@+id/article_actionbar_backbtn"
+        android:src="@drawable/ic_action_arrow_left"/>
+    <ImageButton
+        android:layout_width="0dp"
+        android:layout_weight="0.2"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:id="@+id/article_actionbar_largerfont"
+        android:src="@drawable/ic_action_font_bigger"/>
+    <ImageButton
+        android:layout_width="0dp"
+        android:layout_weight="0.2"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:id="@+id/article_actionbar_lightbub"
+        android:src="@drawable/ic_action_lightbub"/>
+    <ImageButton
+        android:layout_width="0dp"
+        android:layout_weight="0.2"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:id="@+id/article_actionbar_save"
+        android:src="@drawable/ic_action_bookmark"/>
+    <ImageButton
+        android:layout_width="0dp"
+        android:layout_weight="0.2"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:id="@+id/article_actionbar_share"
+        android:src="@drawable/ic_action_share"/>
+
+</LinearLayout>

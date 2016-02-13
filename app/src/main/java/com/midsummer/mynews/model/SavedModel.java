@@ -79,8 +79,7 @@ public class SavedModel extends BaseModel{
      * @param raw
      * @return
      */
-    @DebugLog
-    private String extractImagelinkFromRawString(String raw){
+    public static String extractImagelinkFromRawString(String raw){
         try{
             Matcher m = Pattern.compile("(https?:\\/\\/.*\\.(?:png|jpg|jpeg))").matcher(raw);
             return m.find() ? m.group(1) : "";

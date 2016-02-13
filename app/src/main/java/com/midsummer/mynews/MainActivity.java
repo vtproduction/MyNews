@@ -1,87 +1,121 @@
 package com.midsummer.mynews;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 
-import com.midsummer.mynews.API.APIEndpoint;
-import com.midsummer.mynews.API.APIService;
-import com.midsummer.mynews.model.APIResponse;
-import com.midsummer.mynews.model.Result;
-import com.midsummer.mynews.model.SavedModel;
+import com.midsummer.mynews.fragment.NewestArticleFragment;
+import com.midsummer.mynews.fragment.OneFragment;
 
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
+
+
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+    @Bind(R.id.main_container)
+    ViewPager mPager;
+    @Bind(R.id.tabs)
+    TabLayout mTabs;
+
+    private static final int[] tabIcons = {
+            R.drawable.ic_action_news,
+            R.drawable.ic_action_tiles_large,
+            R.drawable.ic_search,
+            R.drawable.ic_bookmark
+    };
+
+    private static final int[] toolbarTitle = {
+            R.string.tab_newest,
+            R.string.tab_topic,
+            R.string.tab_search,
+            R.string.tab_saved
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        setupViewPager(mPager);
+        mTabs.setupWithViewPager(mPager);
+        setupTabIcons();
+
+    }
+
+    public void setupTabIcons(){
+        for (int i = 0; i < mTabs.getTabCount(); i++){
+            mTabs.getTabAt(i).setIcon(tabIcons[i]);
+
+        }
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(NewestArticleFragment.newInstance(), "ONE");
+        adapter.addFragment(new OneFragment(), "TWO");
+        adapter.addFragment(new OneFragment(), "THREE");
+        adapter.addFragment(new OneFragment(), "FOUR");
+        viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                getSupportActionBar().setTitle(getResources().getString(toolbarTitle[position]));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
             }
         });
 
-        //TestModel t = new TestModel("zero","one");
-        //t.save();
-
-
-        APIEndpoint p = APIService.build();
-        Call<APIResponse> call = p.getLastestArticle(1);
-        call.enqueue(new Callback<APIResponse>() {
-            @Override
-            public void onResponse(Response<APIResponse> response, Retrofit retrofit) {
-                APIResponse APIResponse = response.body();
-                for (Result res: APIResponse.response.results
-                     ) {
-                    Log.d("MYTAG", res.webTitle + " - " + res.webPublicationDate);
-                    SavedModel.ViewModel2SavedModel(res).save();
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                Log.d("MYTAG",t.getMessage());
-            }
-        });
     }
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
         }
 
-        return super.onOptionsItemSelected(item);
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return null;
+        }
+
+
     }
 }
