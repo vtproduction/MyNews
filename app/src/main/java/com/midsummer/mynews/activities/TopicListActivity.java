@@ -1,5 +1,8 @@
 package com.midsummer.mynews.activities;
 
+import android.annotation.TargetApi;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -9,6 +12,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,10 +21,12 @@ import android.widget.Toast;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerView;
 import com.midsummer.mynews.API.APIEndpoint;
 import com.midsummer.mynews.API.APIService;
+import com.midsummer.mynews.MainActivity;
 import com.midsummer.mynews.R;
 import com.midsummer.mynews.adapter.NewestArticleAdapter;
 import com.midsummer.mynews.model.article.APIResponse;
 import com.midsummer.mynews.model.topic.Result;
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import org.parceler.Parcels;
 
@@ -37,6 +44,7 @@ import retrofit.Retrofit;
 public class TopicListActivity extends AppCompatActivity {
 
     private Result mTopic;
+    private String topicname, topicid; //starting activity with non-model sent
 
     @Bind(R.id.ultimate_recycler_view)
     UltimateRecyclerView mRecyclerView;
@@ -47,19 +55,35 @@ public class TopicListActivity extends AppCompatActivity {
     NewestArticleAdapter mAdapter = null;
     LinearLayoutManager linearLayoutManager;
     int page = 1;
+    private Typeface font;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_one);
+        setContentView(R.layout.activity_topiclist_main);
         setupActionbar();
         ButterKnife.bind(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            setTranslucentStatus(true);
+        }
+
+        SystemBarTintManager tintManager = new SystemBarTintManager(this);
+        tintManager.setStatusBarTintEnabled(true);
+        tintManager.setStatusBarTintResource(R.color.base_color_1);
+
 
         mTopic =  Parcels.unwrap(getIntent().getParcelableExtra("topic"));
         if (mTopic == null){
-            this.finish();
+            topicid = getIntent().getStringExtra("topicid");
+            topicname = getIntent().getStringExtra("topicname");
+        }else{
+            topicid = mTopic.getId();
+            topicname = mTopic.getWebTitle();
         }
 
-        mActionbarTitle.setText(mTopic.getWebTitle());
+        this.font = Typeface.createFromAsset(this
+                .getAssets(), String.format("font/%s", "titlefont.ttf"));
+        mActionbarTitle.setText(topicname);
+        mActionbarTitle.setTypeface(font);
         mRecyclerView.setHasFixedSize(false);
         linearLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(linearLayoutManager);
@@ -83,6 +107,19 @@ public class TopicListActivity extends AppCompatActivity {
                 processLoadArticle(true);
             }
         });
+    }
+
+    @TargetApi(19)
+    private void setTranslucentStatus(boolean on) {
+        Window win = getWindow();
+        WindowManager.LayoutParams winParams = win.getAttributes();
+        final int bits = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+        if (on) {
+            winParams.flags |= bits;
+        } else {
+            winParams.flags &= ~bits;
+        }
+        win.setAttributes(winParams);
     }
 
     @OnClick(R.id.article_actionbar_backbtn)
@@ -114,7 +151,7 @@ public class TopicListActivity extends AppCompatActivity {
             mRecyclerView.showEmptyView();
         }
         APIEndpoint api = APIService.build();
-        Call<APIResponse> call = api.getArticlesBySection(mTopic.getId(), page);
+        Call<APIResponse> call = api.getArticlesBySection(topicid, page);
         call.enqueue(new Callback<APIResponse>() {
             @Override
             public void onResponse(Response<APIResponse> response, Retrofit retrofit) {
@@ -159,7 +196,8 @@ public class TopicListActivity extends AppCompatActivity {
                         .setAction(getResources().getString(R.string.go_offline), new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-
+                                TopicListActivity.this.finish();
+                                ((MainActivity)getApplicationContext()).setPage(3);
                             }
                         }).show();
             }

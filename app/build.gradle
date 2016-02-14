@@ -48,6 +48,6 @@ dependencies {
     compile 'com.marshalchen.ultimaterecyclerview:library:0.3.18'
     compile 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
     compile 'com.github.manuelpeinado.fadingactionbar:fadingactionbar:3.1.2'
-    compile 'com.makeramen:roundedimageview:2.2.1'
+    compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
 
 }

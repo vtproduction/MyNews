@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyNews</string>
+    <string name="app_name">TheGuardian News</string>
     <string name="action_settings">Settings</string>
     <string name="tab_newest">Newest</string>
     <string name="tab_topic">Topic</string>
@@ -17,5 +17,11 @@
     <string name="text_vietnam">Vietnam</string>
     <string name="text_obama">Obama</string>
     <string name="text_Syria">Syria</string>
+    <string name="article_saved">Article saved !</string>
+    <string name="article_removed">Article removed !</string>
+    <string name="offline_instruction">No articles in offline list. To save the article to offline reading, press the</string>
+    <string name="offline_instruction_2">icon when reading article.</string>
+    <string name="see_all">ALL</string>
+    <string name="con_err_tap_retry">Problems occur when getting news. Tap to retry</string>
 
 </resources>

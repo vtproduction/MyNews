@@ -22,6 +22,7 @@
             android:textColorHighlight="@color/base_color_1"
             android:textColorHint="@color/base_color_1"
             android:singleLine="true"
+            android:drawableRight="@drawable/ic_action_search_dark"
             android:hint="@string/search_topic" />
 
     </android.support.design.widget.TextInputLayout>

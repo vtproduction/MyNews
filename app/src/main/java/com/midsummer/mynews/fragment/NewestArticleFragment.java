@@ -5,6 +5,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerView;
 import com.midsummer.mynews.API.APIEndpoint;
 import com.midsummer.mynews.API.APIService;
+import com.midsummer.mynews.MainActivity;
 import com.midsummer.mynews.R;
 import com.midsummer.mynews.adapter.NewestArticleAdapter;
 import com.midsummer.mynews.model.article.APIResponse;
@@ -30,11 +32,13 @@ import retrofit.Retrofit;
  */
 public class NewestArticleFragment extends Fragment{
 
+
     @Bind(R.id.ultimate_recycler_view)
     UltimateRecyclerView mRecyclerView;
 
     NewestArticleAdapter mAdapter = null;
     LinearLayoutManager linearLayoutManager;
+    private boolean isFirstLoad = true;
 
     public static NewestArticleFragment newInstance(){
         return new NewestArticleFragment();
@@ -60,7 +64,6 @@ public class NewestArticleFragment extends Fragment{
         mRecyclerView.setEmptyView(getResources().getIdentifier("loading_view", "layout",
                 getContext().getPackageName()));
 
-        processLoadNewArticles(true);
         mRecyclerView.enableLoadmore();
         mRecyclerView.setOnLoadMoreListener(new UltimateRecyclerView.OnLoadMoreListener() {
             @Override
@@ -78,14 +81,20 @@ public class NewestArticleFragment extends Fragment{
                 processLoadNewArticles(true);
             }
         });
+
+        processLoadNewArticles(true);
         return v;
     }
+
     int page = 1;
     public void processLoadNewArticles(final boolean showloading){
+        Log.d("MYTAG", "processLoadNewArticles: " + page);
         if (showloading){
+            page = 1;
             mRecyclerView.getEmptyView().findViewById(R.id.progressBar2).setVisibility(View.VISIBLE);
             ((TextView)mRecyclerView.getEmptyView().findViewById(R.id.textView2))
                     .setText(getResources().getString(R.string.loading));
+            mRecyclerView.getEmptyView().findViewById(R.id.textView2).setOnClickListener(null);
             mRecyclerView.showEmptyView();
         }
         APIEndpoint api = APIService.build();
@@ -93,6 +102,7 @@ public class NewestArticleFragment extends Fragment{
         call.enqueue(new Callback<APIResponse>() {
             @Override
             public void onResponse(Response<APIResponse> response, Retrofit retrofit) {
+                Log.d("MYTAG", "processLoadNewArticles-onResponse: " + response.body().response.results.size());
                 mRecyclerView.hideEmptyView();
                 //reach the maximum page
                 if (page >= response.body().response.pages) {
@@ -106,6 +116,7 @@ public class NewestArticleFragment extends Fragment{
                     ((TextView)mRecyclerView.getEmptyView().findViewById(R.id.textView2))
                             .setText(getResources().getString(R.string.no_article_found));
                     mRecyclerView.showEmptyView();
+                    return;
                 }
 
                 //first load
@@ -114,31 +125,37 @@ public class NewestArticleFragment extends Fragment{
                     mRecyclerView.setAdapter(mAdapter);
                     mAdapter.setCustomLoadMoreView(LayoutInflater.from(getContext())
                             .inflate(R.layout.loading_more_view, null));
-
                     mRecyclerView.setAdapter(mAdapter);
                 } else {
                     mAdapter.insert(response.body().response.results, mAdapter.getAdapterItemCount());
-
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
                 if (showloading){
+                    mRecyclerView.getEmptyView().findViewById(R.id.progressBar2).setVisibility(View.INVISIBLE);
+                    ((TextView)mRecyclerView.getEmptyView().findViewById(R.id.textView2))
+                            .setText(getResources().getString(R.string.con_err_tap_retry));
                     mRecyclerView.showEmptyView();
+                    mRecyclerView.getEmptyView().findViewById(R.id.textView2).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            processLoadNewArticles(true);
+                        }
+                    });
                 }
-                mRecyclerView.setRefreshing(false);
-
                 Snackbar.make(getActivity().findViewById(R.id.main_coordinatorlayout),
-                        getResources().getString(R.string.cannot_load_article), Snackbar.LENGTH_INDEFINITE)
+                        getResources().getString(R.string.cannot_load_article), Snackbar.LENGTH_SHORT)
                         .setAction(getResources().getString(R.string.go_offline), new View.OnClickListener(){
                             @Override
                             public void onClick(View v) {
-
+                                ((MainActivity)getActivity()).setPage(3);
                             }
                         }).show();
             }
         });
     }
+
 
 }

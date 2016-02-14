@@ -1,5 +1,7 @@
 package com.midsummer.mynews;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -8,11 +10,17 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.midsummer.mynews.fragment.NewestArticleFragment;
-import com.midsummer.mynews.fragment.OneFragment;
+import com.midsummer.mynews.fragment.SavedArticleFragment;
 import com.midsummer.mynews.fragment.SearchFragment;
 import com.midsummer.mynews.fragment.TopicFragment;
+import com.midsummer.mynews.helper.TypefaceSpan;
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,17 +52,47 @@ public class MainActivity extends AppCompatActivity {
             R.string.tab_saved
     };
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            setTranslucentStatus(true);
+        }
+
+        SystemBarTintManager tintManager = new SystemBarTintManager(this);
+        tintManager.setStatusBarTintEnabled(true);
+        tintManager.setStatusBarTintResource(R.color.base_color_1);
+
         setSupportActionBar(toolbar);
 
         setupViewPager(mPager);
         mTabs.setupWithViewPager(mPager);
         setupTabIcons();
 
+        SpannableString s = new SpannableString(getResources().getString(toolbarTitle[0]));
+        s.setSpan(new TypefaceSpan(this, "titlefont.ttf"), 0, s.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        getSupportActionBar().setTitle(s);
+    }
+
+
+
+    @TargetApi(19)
+    private void setTranslucentStatus(boolean on) {
+        Window win = getWindow();
+        WindowManager.LayoutParams winParams = win.getAttributes();
+        final int bits = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+        if (on) {
+            winParams.flags |= bits;
+        } else {
+            winParams.flags &= ~bits;
+        }
+        win.setAttributes(winParams);
     }
 
     public void setupTabIcons(){
@@ -64,12 +102,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void setPage(int position){
+        mPager.setCurrentItem(position, true);
+    }
+
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(NewestArticleFragment.newInstance(), "ONE");
         adapter.addFragment(TopicFragment.newInstance(), "TWO");
         adapter.addFragment(SearchFragment.newInstance(), "THREE");
-        adapter.addFragment(new OneFragment(), "FOUR");
+        adapter.addFragment(SavedArticleFragment.newInstance(), "FOUR");
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -79,7 +121,20 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-                getSupportActionBar().setTitle(getResources().getString(toolbarTitle[position]));
+                SpannableString s = new SpannableString(getResources().getString(toolbarTitle[position]));
+                s.setSpan(new TypefaceSpan(MainActivity.this, "titlefont.ttf"), 0, s.length(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                getSupportActionBar().setTitle(s);
+                switch (position){
+                    case 0:
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                }
             }
 
             @Override

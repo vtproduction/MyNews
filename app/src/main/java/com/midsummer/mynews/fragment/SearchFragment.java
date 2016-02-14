@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerView;
 import com.midsummer.mynews.API.APIEndpoint;
 import com.midsummer.mynews.API.APIService;
+import com.midsummer.mynews.MainActivity;
 import com.midsummer.mynews.R;
 import com.midsummer.mynews.adapter.NewestArticleAdapter;
 import com.midsummer.mynews.model.article.APIResponse;
@@ -42,7 +43,6 @@ import retrofit.Retrofit;
 public class SearchFragment extends Fragment {
     @Bind(R.id.search_main_recyclerview)
     UltimateRecyclerView mRecyclerView;
-
     NewestArticleAdapter mAdapter = null;
     LinearLayoutManager linearLayoutManager;
     @Bind(R.id.search_main_textfield)
@@ -157,7 +157,7 @@ public class SearchFragment extends Fragment {
     }
 
     public void processSearchArticle(final boolean showloading){
-        Log.d("MYTAG", "page: " + page + " - total page: " +  totalPage);
+        Log.d("MYTAG", "SEARCH: page: " + page + " - total page: " +  totalPage);
         //Clear edittext focus
         mSearchEdittext.clearFocus();
         mRecyclerView.requestFocus();
@@ -177,6 +177,7 @@ public class SearchFragment extends Fragment {
             mRecyclerView.getEmptyView().findViewById(R.id.progressBar2).setVisibility(View.VISIBLE);
             ((TextView)mRecyclerView.getEmptyView().findViewById(R.id.textView2))
                     .setText(getResources().getString(R.string.loading));
+            mRecyclerView.getEmptyView().findViewById(R.id.textView2).setOnClickListener(null);
             mRecyclerView.showEmptyView();
 
         }
@@ -203,9 +204,8 @@ public class SearchFragment extends Fragment {
             public void onResponse(Response<APIResponse> response, Retrofit retrofit) {
                 mRecyclerView.hideEmptyView();
                 try{
-
                     totalPage = response.body().response.pages;
-                    Log.d("MYTAG", "onResponse: page: " + page + " - total page: " +  totalPage + " - size: " + response.body().response.results.size());
+                    Log.d("MYTAG", "SEARCH: onResponse: page: " + page + " - total page: " +  totalPage + " - size: " + response.body().response.results.size());
                     //fetch nothing
                     if (response.body().response.results.size() == 0){
                         mRecyclerView.getEmptyView().findViewById(R.id.progressBar2).setVisibility(View.INVISIBLE);
@@ -236,15 +236,25 @@ public class SearchFragment extends Fragment {
             @Override
             public void onFailure(Throwable t) {
                 if (showloading){
+                    mRecyclerView.getEmptyView().findViewById(R.id.progressBar2).setVisibility(View.INVISIBLE);
+                    ((TextView)mRecyclerView.getEmptyView().findViewById(R.id.textView2))
+                            .setText(getResources().getString(R.string.con_err_tap_retry));
+                    mRecyclerView.showEmptyView();
+                    mRecyclerView.getEmptyView().findViewById(R.id.textView2).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            processSearchArticle(true);
+                        }
+                    });
                     mRecyclerView.showEmptyView();
                 }
                 mRecyclerView.setRefreshing(false);
                 Snackbar.make(getActivity().findViewById(R.id.main_coordinatorlayout),
-                        getResources().getString(R.string.cannot_load_article), Snackbar.LENGTH_INDEFINITE)
+                        getResources().getString(R.string.cannot_load_article), Snackbar.LENGTH_SHORT)
                         .setAction(getResources().getString(R.string.go_offline), new View.OnClickListener(){
                             @Override
                             public void onClick(View v) {
-
+                                ((MainActivity)getActivity()).setPage(3);
                             }
                         }).show();
             }

@@ -3,7 +3,9 @@ package com.midsummer.mynews.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,17 +33,20 @@ public class NewestArticleAdapter extends UltimateViewAdapter<NewestArticleAdapt
     private List<Result> mModel;
     private static final PrettyTime PT = new PrettyTime();
     private Context mContext;
-
+    private Typeface font;
     public NewestArticleAdapter(List<Result> mModel, Context mContext) {
         this.mModel = mModel;
         this.mContext = mContext;
+        this.font = Typeface.createFromAsset(mContext.getApplicationContext()
+                .getAssets(), String.format("font/%s", "titlefont.ttf"));
     }
 
     @Override
     public void onBindViewHolder(final ItemViewViewHolder holder, final int position) {
         if (position < getItemCount() && (customHeaderView != null ? position <= mModel.size() : position < mModel.size()) && (customHeaderView != null ? position > 0 : true)) {
             holder.mTitle.setText(mModel.get(customHeaderView != null ? position - 1 : position).webTitle);
-            holder.mSubtitle.setText(mModel.get(customHeaderView != null ? position - 1 : position).fields.trailText.replaceAll("s/<(.*?)>//g",""));
+            holder.mTitle.setTypeface(font);
+            holder.mSubtitle.setText(Html.fromHtml(mModel.get(customHeaderView != null ? position - 1 : position).fields.trailText).toString());
             holder.mSection.setText(mModel.get(customHeaderView != null ? position - 1 : position).sectionName);
             holder.mPostDate.setText(PT.format(mModel.get(customHeaderView != null ? position - 1 : position).getPostDate()));
             Glide.with(mContext).load(SavedModel.extractImagelinkFromRawString(mModel.get(customHeaderView != null ? position - 1 : position).fields.main))

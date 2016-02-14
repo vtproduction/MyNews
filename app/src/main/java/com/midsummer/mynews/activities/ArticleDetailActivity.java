@@ -2,9 +2,13 @@ package com.midsummer.mynews.activities;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -15,6 +19,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.midsummer.mynews.API.APIEndpoint;
@@ -76,10 +81,13 @@ public class ArticleDetailActivity extends AppCompatActivity {
     LinearLayout mLoadingLayout;
     @Bind(R.id.article_detail_related_layout)
     LinearLayout mRelatedLayout;
+    @Bind(R.id.article_detail_seeall)
+    TextView mTextSeeAll;
     private boolean flag_isNight = false;
     private boolean flag_isLarge = false;
     private boolean flag_isSaved = false;
     private static final PrettyTime PT = new PrettyTime();
+    private Typeface font;
     private AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F);
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -89,7 +97,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         if (mModel == null){
             this.finish();
         }
-
+        this.flag_isSaved = SavedModel.isItemInDB(mModel.id);
         CustomFadingActionBarHelper helper = new CustomFadingActionBarHelper()
                 .actionBarBackground(R.color.base_color_1)
                 .headerLayout(R.layout.article_detail_large_image)
@@ -107,7 +115,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         ViewGroup actionBarLayout = (ViewGroup) getLayoutInflater().inflate(
                 R.layout.article_detail_actionbar,
                 null);
-        final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        final ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeButtonEnabled(false);
         actionBar.setDisplayShowHomeEnabled(false);
         actionBar.setDisplayShowTitleEnabled(false);
@@ -115,17 +123,28 @@ public class ArticleDetailActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(false);
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setCustomView(actionBarLayout, new ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT));
-        android.support.v7.widget.Toolbar parent = (android.support.v7.widget.Toolbar) actionBarLayout.getParent();
+        Toolbar parent = (Toolbar) actionBarLayout.getParent();
         parent.setContentInsetsAbsolute(0, 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            parent.setElevation(0);
+        }
     }
 
     private void displayContent(){
         Glide.with(this).load(SavedModel.extractImagelinkFromRawString(mModel.fields.main))
                 .into((ImageView) findViewById(R.id.article_detail_image));
+        this.font = Typeface.createFromAsset(this
+                .getAssets(), String.format("font/%s", "titlefont.ttf"));
         mTextTitle.setText(mModel.webTitle);
+        mTextTitle.setTypeface(font);
         mTextSection.setText(mModel.sectionName);
         mTextPostDate.setText(new SimpleDateFormat("dd-MM-yyyy hh:mm").format(mModel.getPostDate()));
         mTextMorein.setText(getResources().getString(R.string.more_in) + " " + mModel.sectionName);
+        if (flag_isSaved){
+            mActionbar_savebtn.setImageResource(R.drawable.ic_action_bookmark_remove_fill);
+        }else{
+            mActionbar_savebtn.setImageResource(R.drawable.ic_action_bookmark_add_fill);
+        }
         WebSettings settings = mWebView.getSettings();
         settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -136,6 +155,14 @@ public class ArticleDetailActivity extends AppCompatActivity {
                 .replace("class=\"element element-video\"", "class=\"element element-video\" style='display:none'")
                 .replace("<img", "<img style='width:100%; height:auto'") + "</div>", "text/html; charset=utf-8", "UTF-8");
         mWebView.setBackgroundColor(Color.TRANSPARENT);
+    }
+
+    @OnClick(R.id.article_detail_seeall)
+    public void onSeeAllTextPress(){
+        Intent i = new Intent(this, TopicListActivity.class);
+        i.putExtra("topicid", mModel.sectionId);
+        i.putExtra("topicname", mModel.sectionName);
+        startActivity(i);
     }
 
     @OnClick(R.id.article_actionbar_backbtn)
@@ -150,10 +177,12 @@ public class ArticleDetailActivity extends AppCompatActivity {
         WebSettings settings = mWebView.getSettings();
         if (flag_isLarge){
             flag_isLarge = false;
+            mActionbar_largerfontbtn.setImageResource(R.drawable.ic_action_font_bigger);
             settings.setTextSize(WebSettings.TextSize.LARGER);
         }else{
             flag_isLarge = true;
             settings.setTextSize(WebSettings.TextSize.LARGEST);
+            mActionbar_largerfontbtn.setImageResource(R.drawable.ic_action_font_smaller);
         }
     }
 
@@ -162,6 +191,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
         mActionbar_lightbubbtn.startAnimation(buttonClick);
         if (flag_isNight){
             flag_isNight = false;
+            mActionbar_lightbubbtn.setImageResource(R.drawable.ic_action_lightoff);
             mMainLayout.setBackgroundColor(getResources().getColor(android.R.color.white));
             mTextTitle.setTextColor(getResources().getColor(R.color.base_color_1));
             mTextPostDate.setTextColor(getResources().getColor(android.R.color.primary_text_light));
@@ -172,6 +202,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
             mWebView.setBackgroundColor(Color.TRANSPARENT);
         }else{
             flag_isNight = true;
+            mActionbar_lightbubbtn.setImageResource(R.drawable.ic_action_lighton);
             mMainLayout.setBackgroundColor(getResources().getColor(android.R.color.black));
             mTextTitle.setTextColor(getResources().getColor(R.color.base_color_4));
             mTextPostDate.setTextColor(getResources().getColor(android.R.color.primary_text_dark));
@@ -182,6 +213,26 @@ public class ArticleDetailActivity extends AppCompatActivity {
             mWebView.setBackgroundColor(Color.TRANSPARENT);
         }
 
+    }
+
+
+
+    @OnClick(R.id.article_actionbar_save)
+    public void onSaveBtnPress(){
+        SavedModel m = SavedModel.ViewModel2SavedModel(mModel);
+        if (flag_isSaved){
+            flag_isSaved  = false;
+            //remove
+            m.deleteFromDB();
+            Toast.makeText(this,getResources().getString(R.string.article_removed),Toast.LENGTH_SHORT).show();
+            mActionbar_savebtn.setImageResource(R.drawable.ic_action_bookmark_add_fill);
+        }else {
+            flag_isSaved = true;
+            //insert
+            m.saveToDB();
+            Toast.makeText(this,getResources().getString(R.string.article_saved),Toast.LENGTH_SHORT).show();
+            mActionbar_savebtn.setImageResource(R.drawable.ic_action_bookmark_remove_fill);
+        }
     }
 
 
@@ -214,7 +265,7 @@ public class ArticleDetailActivity extends AppCompatActivity {
                         TextView mPostDate = (TextView) itemView.findViewById(R.id.item_postdate);
                         ImageView mThumbnail = (ImageView) itemView.findViewById(R.id.item_thumbnail);
                         mTitle.setText(result.webTitle);
-                        mSubtitle.setText(result.fields.trailText.replaceAll("s/<(.*?)>//g",""));
+                        mSubtitle.setText(Html.fromHtml(result.fields.trailText).toString());
                         mSection.setText(result.sectionName);
                         mPostDate.setText(PT.format(result.getPostDate()));
                         Glide.with(ArticleDetailActivity.this).load(SavedModel.extractImagelinkFromRawString(result.fields.main))
@@ -245,13 +296,13 @@ public class ArticleDetailActivity extends AppCompatActivity {
 
     private String[] getRandomDateTime(){
         Calendar today = Calendar.getInstance();
-        int year = randBetween(2010, today.get(Calendar.YEAR));
+        int year = randBetween(2015, today.get(Calendar.YEAR));
         int month;
         do {
             month = randBetween(1, 12);
         }while ((year + month) > (today.get(Calendar.YEAR) + today.get(Calendar.MONTH)));
         GregorianCalendar gc = new GregorianCalendar(year, month, 1);
-        int day = randBetween(1, gc.getActualMaximum(gc.DAY_OF_MONTH));
+        int day = randBetween(1, 28);
         DateTime startDate = new DateTime(year, month, day, 0,0,0);
         DateTime endDate = startDate.plusMonths(6);
         DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd");

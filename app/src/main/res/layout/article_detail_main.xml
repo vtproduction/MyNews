@@ -6,6 +6,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@android:color/white"
         android:id="@+id/article_main_layout">
 
         <TextView
@@ -53,16 +54,38 @@
             android:layout_height="wrap_content"
             android:id="@+id/article_detail_webview"
             android:layout_gravity="center_horizontal" />
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/base_color_2"
             android:padding="@dimen/item_padding_large"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/base_color_4"
-            android:id="@+id/article_detail_morein"
-            android:text="@string/more_in"/>
+            android:orientation="horizontal"
+            android:weightSum="1"
+            android:background="@color/base_color_2">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.8"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/item_padding_large"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/base_color_4"
+                android:id="@+id/article_detail_morein"
+                android:text="@string/more_in"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/item_padding_large"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/base_color_4"
+                android:id="@+id/article_detail_seeall"
+                android:text="@string/see_all"/>
+        </LinearLayout>
+
 
         <LinearLayout
             android:orientation="vertical"
@@ -83,7 +106,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="vertical"
-            android:background="@color/base_color_4"
+            android:background="@android:color/white"
             android:layout_height="wrap_content"
             android:id="@+id/article_detail_related_layout">
 

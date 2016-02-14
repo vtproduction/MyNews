@@ -15,6 +15,7 @@ import android.widget.EditText;
 
 import com.midsummer.mynews.API.APIEndpoint;
 import com.midsummer.mynews.API.APIService;
+import com.midsummer.mynews.MainActivity;
 import com.midsummer.mynews.R;
 import com.midsummer.mynews.adapter.TopicAdapter;
 import com.midsummer.mynews.model.topic.Topic;
@@ -58,7 +59,9 @@ public class TopicFragment extends Fragment{
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mAdapter.filter(s.toString());
+                if (mAdapter != null){
+                    mAdapter.filter(s.toString());
+                }
             }
 
             @Override
@@ -89,11 +92,11 @@ public class TopicFragment extends Fragment{
                 }
 
                 Snackbar.make(getActivity().findViewById(R.id.main_coordinatorlayout),
-                        getResources().getString(R.string.cannot_load_article), Snackbar.LENGTH_INDEFINITE)
+                        getResources().getString(R.string.cannot_load_article), Snackbar.LENGTH_SHORT)
                         .setAction(getResources().getString(R.string.go_offline), new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-
+                                ((MainActivity)getActivity()).setPage(3);
                             }
                         }).show();
             }

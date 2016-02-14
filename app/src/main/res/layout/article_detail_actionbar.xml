@@ -25,14 +25,14 @@
         android:layout_height="match_parent"
         android:background="@android:color/transparent"
         android:id="@+id/article_actionbar_lightbub"
-        android:src="@drawable/ic_action_lightbub"/>
+        android:src="@drawable/ic_action_lightoff"/>
     <ImageButton
         android:layout_width="0dp"
         android:layout_weight="0.2"
         android:layout_height="match_parent"
         android:background="@android:color/transparent"
         android:id="@+id/article_actionbar_save"
-        android:src="@drawable/ic_action_bookmark"/>
+        android:src="@drawable/ic_action_bookmark_add_fill"/>
     <ImageButton
         android:layout_width="0dp"
         android:layout_weight="0.2"

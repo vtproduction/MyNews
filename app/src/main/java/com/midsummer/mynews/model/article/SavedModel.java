@@ -3,10 +3,13 @@ package com.midsummer.mynews.model.article;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.parceler.Parcel;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -124,5 +127,42 @@ public class SavedModel extends BaseModel{
                 this.apiUrl,
                 this.sectionName
         );
+    }
+
+    public static List<Result> getAll(){
+        List<Result> results = new ArrayList<>();
+        List<SavedModel> sm = SQLite.select().from(SavedModel.class).queryList();
+        for (SavedModel s:
+             sm) {
+            results.add(s.SaveModel2ViewModel());
+        }
+        return results;
+    }
+
+    public static int getCount(){
+        try{
+            return (int) SQLite.selectCountOf().from(SavedModel.class).count();
+        }catch (Exception e){
+            return 0;
+        }
+    }
+
+    public static boolean isItemInDB(String id){
+        return (int)SQLite.selectCountOf()
+                .from(SavedModel.class)
+                .where(SavedModel_Table.id.eq(id)).count() == 1;
+    }
+
+    public int saveToDB(){
+        if (SavedModel.isItemInDB(this.id)){
+            return 1;
+        }
+        this.save();
+        return 0;
+    }
+
+    public void deleteFromDB(){
+        SQLite.delete(SavedModel.class).
+                where(SavedModel_Table.id.eq(this.id)).query();
     }
 }
