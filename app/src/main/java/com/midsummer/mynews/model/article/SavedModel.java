@@ -1,4 +1,4 @@
-package com.midsummer.mynews.model;
+package com.midsummer.mynews.model.article;
 
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
@@ -94,7 +94,7 @@ public class SavedModel extends BaseModel{
      * @return
      */
     @DebugLog
-    public static SavedModel ViewModel2SavedModel(Result result){
+    public static SavedModel ViewModel2SavedModel(com.midsummer.mynews.model.article.Result result){
         return new SavedModel(
                 result.id,
                 result.type,
@@ -112,7 +112,7 @@ public class SavedModel extends BaseModel{
      *
      * @return
      */
-    public Result SaveModel2ViewModel(){
+    public com.midsummer.mynews.model.article.Result SaveModel2ViewModel(){
         return new Result(
                 this.id,
                 this.type,

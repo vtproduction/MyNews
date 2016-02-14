@@ -33,4 +33,9 @@
         <item name="background">@android:color/transparent</item>
         <item name="windowActionBarOverlay">true</item>
     </style>
+
+    <style name="TextAppearance.App.TextInputLayout" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/base_color_2</item>
+        <item name="android:textSize">14sp</item>
+    </style>
 </resources>

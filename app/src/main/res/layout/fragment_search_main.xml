@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="@dimen/item_padding_large"
+    android:paddingLeft="@dimen/item_padding_large"
+    android:paddingRight="@dimen/item_padding_large">
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/input_layout_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout">
+
+        <EditText
+            android:id="@+id/search_main_textfield"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/base_color_1"
+            android:textColorHighlight="@color/base_color_1"
+            android:textColorHint="@color/base_color_1"
+            android:singleLine="true"
+            android:drawableRight="@drawable/ic_action_search_dark"
+            android:imeOptions="actionSearch"
+            android:hint="@string/search" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/search_suggestlayout"
+            android:gravity="center_horizontal"
+            android:paddingTop="30dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:text="@string/suggestion"
+                android:textColor="@color/base_color_1"
+                android:textStyle="bold"
+                android:id="@+id/textView3" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="@string/text_vietnam"
+                android:layout_margin="@dimen/item_padding_small"
+                android:textColor="@color/base_color_1"
+                android:id="@+id/sgt_1" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="@string/text_obama"
+                android:layout_margin="@dimen/item_padding_small"
+                android:textColor="@color/base_color_1"
+                android:id="@+id/sgt_2" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="@string/text_Syria"
+                android:layout_margin="@dimen/item_padding_small"
+                android:textColor="@color/base_color_1"
+                android:id="@+id/sgt_3" />
+
+        </LinearLayout>
+        <com.marshalchen.ultimaterecyclerview.UltimateRecyclerView
+            android:id="@+id/search_main_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible"></com.marshalchen.ultimaterecyclerview.UltimateRecyclerView>
+    </RelativeLayout>
+
+</LinearLayout>

@@ -1,5 +1,5 @@
 
-package com.midsummer.mynews.model;
+package com.midsummer.mynews.model.article;
 
 import org.parceler.Generated;
 import org.parceler.Parcel;

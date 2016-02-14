@@ -1,4 +1,4 @@
-package com.midsummer.mynews.model;
+package com.midsummer.mynews.model.article;
 
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;

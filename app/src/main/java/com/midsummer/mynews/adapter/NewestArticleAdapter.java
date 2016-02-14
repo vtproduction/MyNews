@@ -11,12 +11,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerviewViewHolder;
 import com.marshalchen.ultimaterecyclerview.UltimateViewAdapter;
 import com.midsummer.mynews.R;
 import com.midsummer.mynews.activities.ArticleDetailActivity;
-import com.midsummer.mynews.model.Result;
-import com.midsummer.mynews.model.SavedModel;
+import com.midsummer.mynews.model.article.Result;
+import com.midsummer.mynews.model.article.SavedModel;
 
 import org.ocpsoft.prettytime.PrettyTime;
 import org.parceler.Parcels;
@@ -45,17 +46,9 @@ public class NewestArticleAdapter extends UltimateViewAdapter<NewestArticleAdapt
             holder.mPostDate.setText(PT.format(mModel.get(customHeaderView != null ? position - 1 : position).getPostDate()));
             Glide.with(mContext).load(SavedModel.extractImagelinkFromRawString(mModel.get(customHeaderView != null ? position - 1 : position).fields.main))
                     .placeholder(R.drawable.ic_broken_image)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .error(R.drawable.ic_broken_image)
                     .into(holder.mThumbnail);
-            /*if (mDragStartListener != null) {
-                holder.item_view.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        return false;
-                    }
-                });
-            }*/
-
             holder.item_view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

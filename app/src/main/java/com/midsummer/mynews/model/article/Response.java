@@ -1,11 +1,10 @@
 
-package com.midsummer.mynews.model;
+package com.midsummer.mynews.model.article;
 
 import org.parceler.Generated;
 
 import java.util.ArrayList;
 import java.util.List;
-
 @Generated("org.jsonschema2pojo")
 public class Response {
 

@@ -1,5 +1,5 @@
 
-package com.midsummer.mynews.model;
+package com.midsummer.mynews.model.article;
 
 
 import org.parceler.Generated;
@@ -7,7 +7,7 @@ import org.parceler.Generated;
 @Generated("org.jsonschema2pojo")
 public class APIResponse {
 
-    public Response response;
+    public com.midsummer.mynews.model.article.Response response;
 
     /**
      * No args constructor for use in serialization
@@ -20,8 +20,10 @@ public class APIResponse {
      * 
      * @param response
      */
-    public APIResponse(Response response) {
+    public APIResponse(com.midsummer.mynews.model.article.Response response) {
         this.response = response;
     }
 
 }
+
+

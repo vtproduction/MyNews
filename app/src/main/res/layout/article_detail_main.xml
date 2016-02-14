@@ -60,10 +60,30 @@
             android:padding="@dimen/item_padding_large"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:text="@string/you_want_to_read"/>
+            android:textColor="@color/base_color_4"
+            android:id="@+id/article_detail_morein"
+            android:text="@string/more_in"/>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:id="@+id/article_detail_loading"
+            android:background="@color/transparent_color"
+            android:gravity="center"
+            android:layout_gravity="center_horizontal">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/progressBar" />
+        </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="vertical"
+            android:background="@color/base_color_4"
             android:layout_height="wrap_content"
             android:id="@+id/article_detail_related_layout">
 

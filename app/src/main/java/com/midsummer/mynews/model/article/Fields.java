@@ -1,5 +1,5 @@
 
-package com.midsummer.mynews.model;
+package com.midsummer.mynews.model.article;
 
 import org.parceler.Generated;
 import org.parceler.Parcel;
@@ -15,13 +15,13 @@ public class Fields {
 
     /**
      * No args constructor for use in serialization
-     * 
+     *
      */
     public Fields() {
     }
 
     /**
-     * 
+     *
      * @param body
      * @param trailText
      * @param main

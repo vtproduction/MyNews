@@ -10,6 +10,12 @@
     <string name="cannot_load_article">Cannot load articles</string>
     <string name="go_offline">GO OFFLINE</string>
     <string name="no_article_found">No article found !</string>
-    <string name="you_want_to_read">You may want to read</string>
+    <string name="more_in">More in</string>
+    <string name="search_topic">Search topic...</string>
+    <string name="search">Search...</string>
+    <string name="suggestion">Suggestion</string>
+    <string name="text_vietnam">Vietnam</string>
+    <string name="text_obama">Obama</string>
+    <string name="text_Syria">Syria</string>
 
 </resources>

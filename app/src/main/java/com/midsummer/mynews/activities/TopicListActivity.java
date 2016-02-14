@@ -1,13 +1,15 @@
-package com.midsummer.mynews.fragment;
+package com.midsummer.mynews.activities;
 
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,56 +19,59 @@ import com.midsummer.mynews.API.APIService;
 import com.midsummer.mynews.R;
 import com.midsummer.mynews.adapter.NewestArticleAdapter;
 import com.midsummer.mynews.model.article.APIResponse;
+import com.midsummer.mynews.model.topic.Result;
+
+import org.parceler.Parcels;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 
 /**
- * Created by nienb on 11/2/16.
+ * Created by nienb on 14/2/16.
  */
-public class NewestArticleFragment extends Fragment{
+public class TopicListActivity extends AppCompatActivity {
+
+    private Result mTopic;
 
     @Bind(R.id.ultimate_recycler_view)
     UltimateRecyclerView mRecyclerView;
-
+    @Bind(R.id.article_actionbar_backbtn)
+    ImageButton mBackBtn;
+    @Bind(R.id.actionbar_title)
+    TextView mActionbarTitle;
     NewestArticleAdapter mAdapter = null;
     LinearLayoutManager linearLayoutManager;
-
-    public static NewestArticleFragment newInstance(){
-        return new NewestArticleFragment();
-    }
-    public NewestArticleFragment() {
-        // Required empty public constructor
-    }
-
+    int page = 1;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
+        setContentView(R.layout.fragment_one);
+        setupActionbar();
+        ButterKnife.bind(this);
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_one, container, false);
-        ButterKnife.bind(this, v);
+        mTopic =  Parcels.unwrap(getIntent().getParcelableExtra("topic"));
+        if (mTopic == null){
+            this.finish();
+        }
+
+        mActionbarTitle.setText(mTopic.getWebTitle());
         mRecyclerView.setHasFixedSize(false);
-        linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(linearLayoutManager);
-        mRecyclerView.setEmptyView(getResources().getIdentifier("loading_view", "layout",
-                getContext().getPackageName()));
+        mRecyclerView.setEmptyView(getResources().getIdentifier("loading_view", "layout",getPackageName()));
 
-        processLoadNewArticles(true);
+        processLoadArticle(true);
         mRecyclerView.enableLoadmore();
         mRecyclerView.setOnLoadMoreListener(new UltimateRecyclerView.OnLoadMoreListener() {
             @Override
             public void loadMore(int itemsCount, final int maxLastVisiblePosition) {
                 page++;
-                processLoadNewArticles(false);
+                processLoadArticle(false);
             }
         });
 
@@ -75,13 +80,33 @@ public class NewestArticleFragment extends Fragment{
             @Override
             public void onRefresh() {
                 page = 1;
-                processLoadNewArticles(true);
+                processLoadArticle(true);
             }
         });
-        return v;
     }
-    int page = 1;
-    public void processLoadNewArticles(final boolean showloading){
+
+    @OnClick(R.id.article_actionbar_backbtn)
+    public void onBackBtnPressed(){
+        this.finish();
+    }
+
+    private void setupActionbar(){
+        ViewGroup actionBarLayout = (ViewGroup) getLayoutInflater().inflate(
+                R.layout.topic_list_activity_actionbar,
+                null);
+        final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeButtonEnabled(false);
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setElevation(0);
+        actionBar.setDisplayHomeAsUpEnabled(false);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(actionBarLayout, new ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT));
+        android.support.v7.widget.Toolbar parent = (android.support.v7.widget.Toolbar) actionBarLayout.getParent();
+        parent.setContentInsetsAbsolute(0, 0);
+    }
+
+    private void processLoadArticle(final boolean showloading){
         if (showloading){
             mRecyclerView.getEmptyView().findViewById(R.id.progressBar2).setVisibility(View.VISIBLE);
             ((TextView)mRecyclerView.getEmptyView().findViewById(R.id.textView2))
@@ -89,14 +114,14 @@ public class NewestArticleFragment extends Fragment{
             mRecyclerView.showEmptyView();
         }
         APIEndpoint api = APIService.build();
-        Call<APIResponse> call = api.getLastestArticle(page);
+        Call<APIResponse> call = api.getArticlesBySection(mTopic.getId(), page);
         call.enqueue(new Callback<APIResponse>() {
             @Override
             public void onResponse(Response<APIResponse> response, Retrofit retrofit) {
                 mRecyclerView.hideEmptyView();
                 //reach the maximum page
                 if (page >= response.body().response.pages) {
-                    Toast.makeText(getContext(),
+                    Toast.makeText(TopicListActivity.this,
                             getResources().getString(R.string.no_more_news), Toast.LENGTH_SHORT).show();
                 }
 
@@ -110,9 +135,9 @@ public class NewestArticleFragment extends Fragment{
 
                 //first load
                 if (page == 1) {
-                    mAdapter = new NewestArticleAdapter(response.body().response.results, getContext());
+                    mAdapter = new NewestArticleAdapter(response.body().response.results, TopicListActivity.this);
                     mRecyclerView.setAdapter(mAdapter);
-                    mAdapter.setCustomLoadMoreView(LayoutInflater.from(getContext())
+                    mAdapter.setCustomLoadMoreView(LayoutInflater.from(TopicListActivity.this)
                             .inflate(R.layout.loading_more_view, null));
 
                     mRecyclerView.setAdapter(mAdapter);
@@ -129,9 +154,9 @@ public class NewestArticleFragment extends Fragment{
                 }
                 mRecyclerView.setRefreshing(false);
 
-                Snackbar.make(getActivity().findViewById(R.id.main_coordinatorlayout),
+                Snackbar.make(findViewById(R.id.main_coordinatorlayout),
                         getResources().getString(R.string.cannot_load_article), Snackbar.LENGTH_INDEFINITE)
-                        .setAction(getResources().getString(R.string.go_offline), new View.OnClickListener(){
+                        .setAction(getResources().getString(R.string.go_offline), new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
 
@@ -140,5 +165,4 @@ public class NewestArticleFragment extends Fragment{
             }
         });
     }
-
 }

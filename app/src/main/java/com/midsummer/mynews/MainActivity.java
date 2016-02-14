@@ -11,6 +11,8 @@ import android.support.v7.widget.Toolbar;
 
 import com.midsummer.mynews.fragment.NewestArticleFragment;
 import com.midsummer.mynews.fragment.OneFragment;
+import com.midsummer.mynews.fragment.SearchFragment;
+import com.midsummer.mynews.fragment.TopicFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,8 +67,8 @@ public class MainActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(NewestArticleFragment.newInstance(), "ONE");
-        adapter.addFragment(new OneFragment(), "TWO");
-        adapter.addFragment(new OneFragment(), "THREE");
+        adapter.addFragment(TopicFragment.newInstance(), "TWO");
+        adapter.addFragment(SearchFragment.newInstance(), "THREE");
         adapter.addFragment(new OneFragment(), "FOUR");
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
